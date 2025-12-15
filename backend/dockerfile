@@ -1,0 +1,56 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install build-essential if needed
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy source code
+COPY src /app/src
+COPY requirements.txt /app/requirements.txt
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose port
+EXPOSE 8000
+
+# Start FastAPI
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+#FROM python:3.12-slim as builder
+
+#sets the default working directory inside the image/container.
+#WORKDIR /app
+
+#to avoid security risks
+#RUN pyproject.toml requirements.txt  ./
+#RUN apt-get update && apt-get install -y --no-install-recommends build-essential && \
+  #  rm -rf /var/lib/apt/lists/*
+
+# Copy pyproject.toml and source code
+#COPY pyproject.toml .
+#COPY src /app/src
+
+# Build wheels for all dependencies
+#RUN pip wheel --no-cache-dir --wheel-dir /wheels .
+
+#FROM python:3.12-slim as runner 
+
+#COPY --from=builder /app/wheels /wheels
+#install and delete wheels to reduce image size
+#RUN pip install --no-cache /wheels/* && rm -rf /wheels
+# Copy the requirements file to the image's filesystem
+#since each time it  changes, only this layer will be rebuilt.
+#OPY requirements.txt  requirements.txt 
+#cache-dir is in image and no need for it
+#UN pip install --no-cache-dir -r requirements.txt 
+
+# Copy new files and directories to the image's filesystem
+#OPY src  /app/src
+
+
+#EXPOSE 8000
+
+#CMD [ "uvicorn","src.main:app","--host","0.0.0.0","--port","8000" ]

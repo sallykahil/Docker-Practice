@@ -1,0 +1,8 @@
+
+FROM nginx:alpine
+
+#to avoid 500 errors when refreshing the page
+#“Remove Nginx’s default site so only my website is served.”
+
+RUN rm -rf /usr/share/nginx/html
+COPY static/ /usr/share/nginx/html
